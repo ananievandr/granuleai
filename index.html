@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Автоматический анализ гранул по фотографии</title>
+    <meta name="description" content="Система автоматического анализа гранул по фотографии. Измерение, контроль качества, статистика и отчеты.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Inter", "system-ui", "sans-serif"]
+                    },
+                    colors: {
+                        primary: "#0f172a",
+                        secondary: "#1e293b",
+                        accent: "#06b6d4",
+                        "accent-hover": "#0891b2"
+                    },
+                    animation: {
+                        "gradient-x": "gradient-x 15s ease infinite",
+                        "float": "float 6s ease-in-out infinite",
+                        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+                    },
+                    keyframes: {
+                        "gradient-x": {
+                            "0%, 100%": { "background-position": "0% 50%" },
+                            "50%": { "background-position": "100% 50%" }
+                        },
+                        "float": {
+                            "0%, 100%": { transform: "translateY(0)" },
+                            "50%": { transform: "translateY(-10px)" }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Inter", system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+        @media (hover: hover) {
+            .glass-card:hover {
+                transform: translateY(-4px);
+            }
+        }
+        /* Prevent horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Better touch targets */
+        button, a {
+            touch-action: manipulation;
+        }
+        .demo-carousel {
+            aspect-ratio: 2 / 1;
+        }
+        .demo-carousel-track {
+            transition: transform 0.8s ease;
+        }
+        .demo-carousel-bullet {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.45);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .demo-carousel-bullet.is-active {
+            background: #06b6d4;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body class="bg-primary text-gray-100 antialiased overflow-x-hidden w-full">
+    
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+        <div class="glass border-b border-white/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="relative flex justify-between items-center h-16 md:h-20">
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                            <i class="fas fa-microscope text-white text-sm md:text-lg"></i>
+                        </div>
+                        <span class="font-bold text-lg md:text-xl tracking-tight">Granule<span class="text-cyan-400">AI</span></span>
+                    </div>
+                    
+                    <div class="hidden md:flex items-center space-x-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" id="nav-links">
+                        <!-- Nav items injected via JS -->
+                    </div>
+                    
+                    <button class="md:hidden text-gray-300 hover:text-white p-2 -mr-2" id="mobile-menu-btn" aria-label="Открыть меню">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden glass border-b border-white/10 absolute w-full" id="mobile-menu">
+            <div class="px-4 py-4 space-y-1" id="mobile-nav-links">
+                <!-- Mobile nav items injected via JS -->
+            </div>
+            <div class="px-4 py-4 border-t border-white/10 space-y-3">
+                <button class="w-full text-center text-gray-300 hover:text-white py-3 rounded-lg hover:bg-white/5 transition-colors">Вход</button>
+                <button class="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3 rounded-lg font-medium transition-all">Запросить демо</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[calc(100vh-4rem)] md:min-h-screen flex items-center justify-center pt-16 md:pt-20 pb-12 md:pb-0 overflow-hidden">
+        <!-- Dynamic Gradient Background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-900/40 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-blue-900/40 via-transparent to-transparent"></div>
+        
+        <!-- Animated Gradient Mesh -->
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-blue-500/20 animate-gradient-x bg-[length:200%_200%]"></div>
+        </div>
+        
+        <!-- Grid Pattern -->
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:3rem_3rem] md:bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-white/5 border border-white/10 mb-6 md:mb-8 animate-float">
+                <span class="flex h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span class="text-xs md:text-sm font-medium text-gray-300">Новая версия 2.0 с улучшенной точностью</span>
+            </div>
+            
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-4 md:mb-6 leading-tight px-2">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400">Автоматический анализ</span>
+                <br class="hidden sm:block">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">гранул по фотографии</span>
+            </h1>
+            
+            <p class="mt-4 md:mt-6 max-w-2xl mx-auto text-base md:text-xl text-gray-400 leading-relaxed px-4">
+                Прототип системы анализирует гранулы по фото: выполняет измерения, фиксирует результаты, определяет брак по установленным правилам и ведёт журнал измерений.
+            </p>
+            
+            <div class="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center px-4">
+                <a href="#demo" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-2xl hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 group min-h-[48px]">
+                    <span>Попробовать демо</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Stats -->
+            <div class="mt-12 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto px-4" id="hero-stats">
+                <!-- Stats injected via JS -->
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i class="fas fa-chevron-down text-gray-500 text-lg md:text-xl"></i>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="relative py-16 md:py-24 bg-secondary" id="workflow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 md:mb-16 px-2">
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">От снимка до вердикта по партии</h2>
+                <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">Простой и интуитивный процесс анализа за три шага</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 relative" id="workflow-grid">
+                <!-- Workflow steps injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="relative py-16 md:py-24 bg-primary" id="features">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-10 md:mb-16 px-2">
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">Журнал, статистика и отчёты</h2>
+                <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">Полный контроль качества с детальной аналитикой и экспортом данных</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8" id="features-grid">
+                <!-- Feature cards injected via JS -->
+            </div>
+            
+            <!-- Demo Image Carousel -->
+            <div class="mt-10 md:mt-20 text-center px-2">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3">Примеры пользовательского интерфейса</h3>
+                <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">Экраны журнала, статистики и результатов анализа гранул</p>
+            </div>
+            <div class="mt-6 md:mt-8 glass rounded-2xl p-1.5 md:p-2 shadow-2xl shadow-cyan-500/10 mx-2">
+                <div class="demo-carousel relative bg-slate-900 rounded-xl overflow-hidden" id="demo-carousel">
+                    <!-- Carousel images injected via JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo CTA Section -->
+    <section class="relative py-16 md:py-24 overflow-hidden" id="demo">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-primary to-blue-900/30"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%2306b6d4%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="glass-card rounded-2xl md:rounded-3xl p-6 md:p-12 border border-cyan-500/20">
+                <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-lg shadow-cyan-500/30">
+                    <i class="fas fa-camera text-white text-2xl md:text-3xl"></i>
+                </div>
+                
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Попробуйте демо статичного анализа</h2>
+                <p class="text-gray-400 text-base md:text-lg mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
+                    Прототип работает со снимком гранул, выложенных вручную и сфотографированных камерой на штативе. В демо можно выбрать тип гранулы, выполнить измерение, открыть карточку с разметкой и принять результат в журнал.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
+                    <a href="demo-1/index.html" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 min-h-[48px]">
+                        <i class="fas fa-flask"></i>
+                        <span>Попробовать демо статичного анализа</span>
+                    </a>
+                </div>
+                
+                <div class="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-sm text-gray-500 px-4">
+                    <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Без регистрации</span>
+                    <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Мгновенный результат</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section class="relative py-16 md:py-24 bg-secondary overflow-hidden" id="roadmap">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+                <div class="order-2 lg:order-1">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-4 md:mb-6">
+                        <i class="fas fa-rocket text-cyan-400 text-xs md:text-sm"></i>
+                        <span class="text-xs md:text-sm font-medium text-cyan-400">Направление развития</span>
+                    </div>
+                    
+                    <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight">Непрерывный мониторинг</h2>
+                    <p class="text-gray-400 text-base md:text-lg mb-6 md:mb-8 leading-relaxed">
+                        Текущий прототип решает задачу разового анализа по фото. Следующий шаг — непрерывный контроль гранул в потоке, например на конвейерной ленте: автоматический анализ без ручной выкладки и остановки процесса.
+                    </p>
+                    
+                    <div class="space-y-3 md:space-y-4 mb-8 md:mb-10">
+                        <div class="flex items-start gap-3 md:gap-4">
+                            <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-cyan-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm md:text-base">Анализ в реальном времени</h4>
+                                <p class="text-gray-500 text-xs md:text-sm">Обработка видеопотока с камер наблюдения</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 md:gap-4">
+                            <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-cyan-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm md:text-base">Интеграция с конвейерами</h4>
+                                <p class="text-gray-500 text-xs md:text-sm">Подключение к линиям производства без остановки</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 md:gap-4">
+                            <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-cyan-400 text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white text-sm md:text-base">Мгновенные оповещения</h4>
+                                <p class="text-gray-500 text-xs md:text-sm">Автоматическое уведомление при обнаружении брака</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="demo-2/" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 min-h-[48px]">
+                        <span>Попробовать демо непрерывного мониторинга</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="relative order-1 lg:order-2 px-4 md:px-0">
+                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl blur-3xl opacity-20 animate-pulse-slow"></div>
+                    <div class="relative glass-card rounded-2xl md:rounded-3xl p-4 md:p-8 border border-cyan-500/20">
+                        <div class="relative min-h-[260px] md:min-h-[420px] rounded-xl md:rounded-2xl overflow-hidden bg-slate-900/70 shadow-2xl flex items-center justify-center">
+                            <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-blue-600/10 to-transparent"></div>
+                            <div class="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.08)_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
+                            <div class="relative w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                                <i class="fas fa-video text-white text-4xl md:text-6xl"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Stats Cards - hidden on small mobile, shown on larger screens -->
+                        <div class="hidden sm:block absolute -top-4 -right-4 md:-top-6 md:-right-6 glass-card p-3 md:p-4 rounded-lg md:rounded-xl border border-cyan-500/30 shadow-xl animate-float">
+                            <div class="flex items-center gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check text-green-400 text-sm md:text-base"></i>
+                                </div>
+                                <div>
+                                    <div class="text-lg md:text-2xl font-bold text-white">90%+</div>
+                                    <div class="text-[10px] md:text-xs text-gray-400">Точность</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="hidden sm:block absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 glass-card p-3 md:p-4 rounded-lg md:rounded-xl border border-cyan-500/30 shadow-xl animate-float" style="animation-delay: 1s;">
+                            <div class="flex items-center gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-tachometer-alt text-cyan-400 text-sm md:text-base"></i>
+                                </div>
+                                <div>
+                                    <div class="text-lg md:text-2xl font-bold text-white">100+</div>
+                                    <div class="text-[10px] md:text-xs text-gray-400">Гранул/мин</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacts Section -->
+    <section class="relative py-16 md:py-24 bg-primary overflow-hidden" id="contacts">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-10 md:mb-16 px-2">
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">Контакты</h2>
+                <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                    Свяжитесь с нами по электронной почте или по телефону для получения дополнительной информации и оформления заказа.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_1.45fr_1fr] gap-6 md:gap-8 max-w-5xl md:max-w-6xl mx-auto">
+                <a href="tel:+79162847852" class="glass-card rounded-xl md:rounded-2xl p-6 md:p-8 text-center group block min-w-0">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fas fa-phone text-white text-xl md:text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3 text-white">Телефон</h3>
+                    <p class="text-cyan-400 text-base md:text-lg font-medium group-hover:text-cyan-300 transition-colors">8 916 284-78-52</p>
+                </a>
+
+                <a href="mailto:doroshenko.igor@physics.msu.ru" class="glass-card rounded-xl md:rounded-2xl p-6 md:px-10 md:py-8 text-center group block min-w-0">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fas fa-envelope text-white text-xl md:text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3 text-white">Электронная почта</h3>
+                    <p class="text-cyan-400 text-sm md:text-base font-medium break-all md:break-normal md:whitespace-nowrap group-hover:text-cyan-300 transition-colors">doroshenko.igor@physics.msu.ru</p>
+                </a>
+
+                <div class="glass-card rounded-xl md:rounded-2xl p-6 md:p-8 text-center group min-w-0">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fas fa-map-marker-alt text-white text-xl md:text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3 text-white">Адрес</h3>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed">Научный парк МГУ, Ленинские горы, д. 1, стр. 29-а</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary border-t border-white/10 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-microscope text-white text-sm"></i>
+                    </div>
+                    <span class="font-bold text-lg">Granule<span class="text-cyan-400">AI</span></span>
+                </div>
+                
+                <p class="text-gray-500 text-xs md:text-sm text-center md:text-left mt-2 md:mt-0">© 2026 GranuleAI. Все права защищены.</p>
+                
+                <div class="flex items-center gap-3 md:gap-4 mt-2 md:mt-0" aria-hidden="true">
+                    <div class="w-9 h-9 md:w-10 md:h-10 shrink-0"></div>
+                    <div class="w-9 h-9 md:w-10 md:h-10 shrink-0"></div>
+                    <div class="w-9 h-9 md:w-10 md:h-10 shrink-0"></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data Layer
+        const navigationData = [
+            { "label": "О продукте", "href": "#workflow" },
+            { "label": "Возможности", "href": "#features" },
+            { "label": "Демо", "href": "#demo" },
+            { "label": "Контакты", "href": "#contacts" }
+        ];
+
+        const heroStatsData = [
+            { "value": "90%+", "label": "Точность распознавания" },
+            { "value": "< 10с", "label": "Время анализа" },
+            { "value": "200+", "label": "Анализов в сутки" },
+            { "value": "40+", "label": "Типов гранул" }
+        ];
+
+        const workflowStepsData = [
+            {
+                "step": "01",
+                "title": "Выбор типа гранулы",
+                "description": "Пользователь выбирает тип гранулы или использует тип из последнего измерения",
+                "icon": "fas fa-list-ul"
+            },
+            {
+                "step": "02",
+                "title": "Анализ снимка",
+                "description": "Система сегментирует гранулы на кадре, измеряет длину и определяет брак по длине и косому срезу",
+                "icon": "fas fa-camera-retro"
+            },
+            {
+                "step": "03",
+                "title": "Карточка результата",
+                "description": "Получите детальную карточку с результатом анализа и принятие решения о годности партии",
+                "icon": "fas fa-clipboard-check"
+            }
+        ];
+
+        const featuresData = [
+            {
+                "title": "Журнал измерений",
+                "description": "История в табличном виде: идентификатор, тип гранулы, дата и время, количество гранул и процент годных. Фильтрация по периоду, типу и результату.",
+                "icon": "fas fa-history",
+                "color": "from-blue-400 to-blue-600"
+            },
+            {
+                "title": "Статистика",
+                "description": "Краткая статистика по выборке: количество измерений, число измерений с браком и без брака, общее количество проанализированных гранул.",
+                "icon": "fas fa-chart-pie",
+                "color": "from-cyan-400 to-cyan-600"
+            },
+            {
+                "title": "Отчеты и экспорт",
+                "description": "Выгрузка отчетов в Excel. Доступны исходное фото, фото с разметкой, количество гранул, средний, максимальный и минимальный размер.",
+                "icon": "fas fa-file-excel",
+                "color": "from-emerald-400 to-emerald-600"
+            }
+        ];
+
+        const demoCarouselImages = [
+            { "src": "images/screen1.jpg", "alt": "Экран интерфейса системы анализа гранул" },
+            { "src": "images/screen2.jpg", "alt": "Экран результатов анализа гранул" }
+        ];
+
+        // Render Functions
+        function renderNavigation(items) {
+            return items.map(item => 
+                "<a href=\"" + item.href + "\" class=\"text-gray-300 hover:text-white transition-colors font-medium text-sm lg:text-base\">" + item.label + "</a>"
+            ).join("");
+        }
+
+        function renderMobileNavigation(items) {
+            return items.map(item => 
+                "<a href=\"" + item.href + "\" class=\"block px-3 py-3 rounded-lg text-base font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors border-b border-white/5 last:border-0\">" + item.label + "</a>"
+            ).join("");
+        }
+
+        function renderHeroStats(items) {
+            return items.map(stat => 
+                "<div class=\"text-center p-2\">" +
+                    "<div class=\"text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1\">" + stat.value + "</div>" +
+                    "<div class=\"text-xs sm:text-sm text-gray-500\">" + stat.label + "</div>" +
+                "</div>"
+            ).join("");
+        }
+
+        function renderWorkflowSteps(items) {
+            return items.map((item, index) => 
+                "<div class=\"relative group\">" +
+                    "<div class=\"glass-card rounded-xl md:rounded-2xl p-6 md:p-8 h-full border border-white/5 hover:border-cyan-500/30 transition-all duration-300\">" +
+                        "<div class=\"absolute -top-3 -right-3 md:-top-4 md:-right-4 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg md:rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform text-sm md:text-base\">" +
+                            item.step +
+                        "</div>" +
+                        "<div class=\"w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br " + (index === 0 ? "from-blue-500/20 to-blue-600/20" : index === 1 ? "from-cyan-500/20 to-cyan-600/20" : "from-emerald-500/20 to-emerald-600/20") + " flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform\">" +
+                            "<i class=\"" + item.icon + " text-xl md:text-2xl " + (index === 0 ? "text-blue-400" : index === 1 ? "text-cyan-400" : "text-emerald-400") + "\"></i>" +
+                        "</div>" +
+                        "<h3 class=\"text-lg md:text-xl font-bold mb-2 md:mb-3 text-white\">" + item.title + "</h3>" +
+                        "<p class=\"text-gray-400 text-sm md:text-base leading-relaxed\">" + item.description + "</p>" +
+                    "</div>" +
+                "</div>"
+            ).join("");
+        }
+
+        function renderFeatureCards(items) {
+            return items.map(item => 
+                "<div class=\"glass-card rounded-xl md:rounded-2xl p-6 md:p-8 h-full group\">" +
+                    "<div class=\"w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br " + item.color + " flex items-center justify-center mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform\">" +
+                        "<i class=\"" + item.icon + " text-white text-xl md:text-2xl\"></i>" +
+                    "</div>" +
+                    "<h3 class=\"text-xl md:text-2xl font-bold mb-3 md:mb-4 text-white\">" + item.title + "</h3>" +
+                    "<p class=\"text-gray-400 text-sm md:text-base leading-relaxed\">" + item.description + "</p>" +
+                "</div>"
+            ).join("");
+        }
+
+        // Builds an automatic sliding carousel for demo screenshots.
+        function initDemoCarousel(images) {
+            const carousel = document.getElementById("demo-carousel");
+            if (!carousel || images.length === 0) return;
+
+            const slides = images.length > 1 ? images.concat(images[0]) : images;
+            carousel.innerHTML =
+                "<div class=\"demo-carousel-track flex h-full\" id=\"demo-carousel-track\">" +
+                    slides.map(image =>
+                        "<img src=\"" + image.src + "\" alt=\"" + image.alt + "\" class=\"w-full h-full object-cover flex-shrink-0 opacity-95\" loading=\"lazy\">"
+                    ).join("") +
+                "</div>" +
+                "<div class=\"absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2\" id=\"demo-carousel-bullets\">" +
+                    images.map((image, index) =>
+                        "<button type=\"button\" class=\"demo-carousel-bullet" + (index === 0 ? " is-active" : "") + "\" data-slide=\"" + index + "\" aria-label=\"Показать изображение " + (index + 1) + "\"></button>"
+                    ).join("") +
+                "</div>";
+
+            if (images.length < 2) return;
+
+            const track = document.getElementById("demo-carousel-track");
+            const bullets = carousel.querySelectorAll(".demo-carousel-bullet");
+            let activeIndex = 0;
+            let carouselInterval;
+
+            function setActiveBullet(index) {
+                bullets.forEach(function(bullet, bulletIndex) {
+                    bullet.classList.toggle("is-active", bulletIndex === index);
+                });
+            }
+
+            function moveToSlide(index, animate) {
+                track.style.transition = animate ? "transform 0.8s ease" : "none";
+                track.style.transform = "translateX(-" + (index * 100) + "%)";
+                setActiveBullet(index % images.length);
+            }
+
+            function showNextSlide() {
+                activeIndex += 1;
+                moveToSlide(activeIndex, true);
+            }
+
+            function restartCarousel() {
+                clearInterval(carouselInterval);
+                carouselInterval = setInterval(showNextSlide, 5000);
+            }
+
+            track.addEventListener("transitionend", function() {
+                if (activeIndex === images.length) {
+                    activeIndex = 0;
+                    moveToSlide(activeIndex, false);
+                }
+            });
+
+            bullets.forEach(function(bullet) {
+                bullet.addEventListener("click", function() {
+                    activeIndex = Number(bullet.dataset.slide);
+                    moveToSlide(activeIndex, true);
+                    restartCarousel();
+                });
+            });
+
+            restartCarousel();
+        }
+
+        function renderFooterLinks(columns) {
+            return columns.map(col => 
+                "<div class=\"col-span-1\">" +
+                    "<h4 class=\"font-semibold text-white mb-3 md:mb-4 text-sm md:text-base\">" + col.title + "</h4>" +
+                    "<ul class=\"space-y-2 md:space-y-3\">" +
+                        col.links.map(link => 
+                            "<li><a href=\"" + link.href + "\" class=\"text-gray-400 hover:text-cyan-400 transition-colors text-xs md:text-sm\">" + link.label + "</a></li>"
+                        ).join("") +
+                    "</ul>" +
+                "</div>"
+            ).join("");
+        }
+
+        // Initialize Render
+        document.getElementById("nav-links").innerHTML = renderNavigation(navigationData);
+        document.getElementById("mobile-nav-links").innerHTML = renderMobileNavigation(navigationData);
+        document.getElementById("hero-stats").innerHTML = renderHeroStats(heroStatsData);
+        document.getElementById("workflow-grid").insertAdjacentHTML("afterbegin", renderWorkflowSteps(workflowStepsData));
+        document.getElementById("features-grid").innerHTML = renderFeatureCards(featuresData);
+        initDemoCarousel(demoCarouselImages);
+
+        // Event Delegation for Navigation
+        document.addEventListener("click", function(event) {
+            const link = event.target.closest("a[href^=\"#\"]");
+            if (!link) return;
+            
+            event.preventDefault();
+            const targetId = link.getAttribute("href");
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+                // Close mobile menu if open
+                document.getElementById("mobile-menu").classList.add("hidden");
+            }
+        });
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById("mobile-menu-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        
+        menuBtn.addEventListener("click", function(event) {
+            event.stopPropagation();
+            mobileMenu.classList.toggle("hidden");
+            const icon = menuBtn.querySelector("i");
+            if (mobileMenu.classList.contains("hidden")) {
+                icon.classList.remove("fa-times");
+                icon.classList.add("fa-bars");
+            } else {
+                icon.classList.remove("fa-bars");
+                icon.classList.add("fa-times");
+            }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener("click", function(event) {
+            if (!mobileMenu.contains(event.target) && !menuBtn.contains(event.target)) {
+                mobileMenu.classList.add("hidden");
+                const icon = menuBtn.querySelector("i");
+                icon.classList.remove("fa-times");
+                icon.classList.add("fa-bars");
+            }
+        });
+
+        // Navbar Scroll Effect
+        let lastScroll = 0;
+        window.addEventListener("scroll", function() {
+            const navbar = document.getElementById("navbar");
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.classList.add("shadow-lg", "shadow-black/20");
+            } else {
+                navbar.classList.remove("shadow-lg", "shadow-black/20");
+            }
+            
+            // Hide/show navbar on scroll (mobile optimization)
+            if (currentScroll > lastScroll && currentScroll > 100 && window.innerWidth < 768) {
+                navbar.style.transform = "translateY(-100%)";
+            } else {
+                navbar.style.transform = "translateY(0)";
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Intersection Observer for Animations
+        const observerOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll(".glass-card").forEach(function(el) {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(20px)";
+            el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+            observer.observe(el);
+        });
+        
+        // Handle resize for mobile menu
+        window.addEventListener("resize", function() {
+            if (window.innerWidth >= 768) {
+                mobileMenu.classList.add("hidden");
+                const icon = menuBtn.querySelector("i");
+                icon.classList.remove("fa-times");
+                icon.classList.add("fa-bars");
+            }
+        });
+    </script>
+</body>
+</html>
