@@ -79,22 +79,8 @@
         button, a {
             touch-action: manipulation;
         }
-        .demo-carousel {
-            aspect-ratio: 2 / 1;
-        }
-        .demo-carousel-track {
-            transition: transform 0.8s ease;
-        }
-        .demo-carousel-bullet {
-            width: 0.75rem;
-            height: 0.75rem;
-            border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.45);
-            transition: background 0.3s ease, transform 0.3s ease;
-        }
-        .demo-carousel-bullet.is-active {
-            background: #06b6d4;
-            transform: scale(1.2);
+        body.image-modal-open {
+            overflow: hidden;
         }
     </style>
 </head>
@@ -109,7 +95,7 @@
                         <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20">
                             <i class="fas fa-microscope text-white text-sm md:text-lg"></i>
                         </div>
-                        <span class="font-bold text-lg md:text-xl tracking-tight">Granule<span class="text-cyan-400">AI</span></span>
+                        <span class="font-bold text-lg md:text-xl tracking-tight">Granule<span class="text-cyan-400">CV</span></span>
                     </div>
                     
                     <div class="hidden md:flex items-center space-x-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" id="nav-links">
@@ -189,12 +175,59 @@
     <section class="relative py-16 md:py-24 bg-secondary" id="workflow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-10 md:mb-16 px-2">
-                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">От снимка до вердикта по партии</h2>
+                <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight">1 минута от снимка до вердикта по партии</h2>
                 <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto">Простой и интуитивный процесс анализа за три шага</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 relative" id="workflow-grid">
                 <!-- Workflow steps injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo CTA Section -->
+    <section class="relative py-16 md:py-24 overflow-hidden" id="demo">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-primary to-blue-900/30"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%2306b6d4%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl blur-3xl opacity-20 animate-pulse-slow"></div>
+                <div class="relative glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 border border-cyan-500/20">
+                    <div class="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-6 md:gap-8 lg:gap-10 items-stretch">
+                        <div class="flex flex-col justify-center text-left p-2 md:p-4 lg:py-8">
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Попробуйте демо статичного анализа</h2>
+                            <p class="text-gray-400 text-base md:text-lg mb-6 md:mb-8 max-w-2xl leading-relaxed">
+                                Прототип работает со снимком гранул, выложенных вручную и сфотографированных камерой на штативе. В демо можно выбрать тип гранулы, выполнить измерение, открыть карточку с разметкой и принять результат в журнал.
+                            </p>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
+                                <a href="demo-1/index.html" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 min-h-[48px]">
+                                    <span>Попробовать демо статичного анализа</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="mt-6 md:mt-8 flex flex-col sm:flex-row items-start gap-3 sm:gap-6 text-sm text-gray-500">
+                                <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Без регистрации</span>
+                                <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Мгновенный результат</span>
+                            </div>
+                        </div>
+
+                        <button type="button" class="group w-full h-full rounded-xl md:rounded-2xl overflow-hidden bg-slate-950 text-left shadow-2xl shadow-cyan-500/10" id="demo-image-open" data-image-modal-src="images/screen1.jpg" data-image-modal-alt="Интерфейс демо статичного анализа гранул" aria-label="Открыть изображение интерфейса демо в режиме просмотра">
+                            <span class="block relative h-full min-h-[260px] sm:min-h-[360px] lg:min-h-[430px]">
+                                <img src="images/screen1.jpg" alt="Интерфейс демо статичного анализа гранул" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" loading="lazy">
+                            <span class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></span>
+                            <span class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3 text-sm md:text-base text-white">
+                                <span class="inline-flex items-center gap-2 rounded-full bg-cyan-500/90 px-3 py-2 text-xs md:text-sm font-semibold shadow-lg">
+                                    <i class="fas fa-search-plus"></i>
+                                    Открыть
+                                </span>
+                            </span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -212,137 +245,50 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8" id="features-grid">
                 <!-- Feature cards injected via JS -->
             </div>
-            
-            <!-- Demo Image Carousel -->
-            <div class="mt-10 md:mt-20 text-center px-2">
-                <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3">Примеры пользовательского интерфейса</h3>
-                <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">Экраны журнала, статистики и результатов анализа гранул</p>
-            </div>
-            <div class="mt-6 md:mt-8 glass rounded-2xl p-1.5 md:p-2 shadow-2xl shadow-cyan-500/10 mx-2">
-                <div class="demo-carousel relative bg-slate-900 rounded-xl overflow-hidden" id="demo-carousel">
-                    <!-- Carousel images injected via JS -->
-                </div>
-            </div>
         </div>
     </section>
 
-    <!-- Demo CTA Section -->
-    <section class="relative py-16 md:py-24 overflow-hidden" id="demo">
-        <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-primary to-blue-900/30"></div>
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%2306b6d4%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <div class="glass-card rounded-2xl md:rounded-3xl p-6 md:p-12 border border-cyan-500/20">
-                <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-lg shadow-cyan-500/30">
-                    <i class="fas fa-camera text-white text-2xl md:text-3xl"></i>
-                </div>
-                
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Попробуйте демо статичного анализа</h2>
-                <p class="text-gray-400 text-base md:text-lg mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed px-2">
-                    Прототип работает со снимком гранул, выложенных вручную и сфотографированных камерой на штативе. В демо можно выбрать тип гранулы, выполнить измерение, открыть карточку с разметкой и принять результат в журнал.
-                </p>
-                
-                <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
-                    <a href="demo-1/index.html" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 min-h-[48px]">
-                        <i class="fas fa-flask"></i>
-                        <span>Попробовать демо статичного анализа</span>
-                    </a>
-                </div>
-                
-                <div class="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-sm text-gray-500 px-4">
-                    <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Без регистрации</span>
-                    <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Мгновенный результат</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Roadmap Section -->
+    <!-- Continuous Monitoring Section -->
     <section class="relative py-16 md:py-24 bg-secondary overflow-hidden" id="roadmap">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
-                <div class="order-2 lg:order-1">
-                    <div class="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-4 md:mb-6">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-secondary to-cyan-900/30"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%2306b6d4%22%20fill-opacity%3D%220.05%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-6 md:gap-8 lg:gap-10 items-stretch">
+                <button type="button" class="group w-full h-full rounded-xl md:rounded-2xl overflow-hidden bg-slate-950 text-left shadow-2xl shadow-cyan-500/10 order-1 lg:order-none" id="monitoring-image-open" data-image-modal-src="images/screen2.jpg" data-image-modal-alt="Интерфейс демо непрерывного мониторинга гранул" aria-label="Открыть изображение интерфейса непрерывного мониторинга в режиме просмотра">
+                    <span class="block relative h-full min-h-[260px] sm:min-h-[360px] lg:min-h-[430px]">
+                        <img src="images/screen2.jpg" alt="Интерфейс демо непрерывного мониторинга гранул" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" loading="lazy">
+                        <span class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></span>
+                        <span class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3 text-sm md:text-base text-white">
+                            <span class="inline-flex items-center gap-2 rounded-full bg-cyan-500/90 px-3 py-2 text-xs md:text-sm font-semibold shadow-lg">
+                                <i class="fas fa-search-plus"></i>
+                                Открыть
+                            </span>
+                        </span>
+                    </span>
+                </button>
+
+                <div class="flex flex-col justify-center text-left p-2 md:p-4 lg:py-8 order-2 lg:order-none">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-4 md:mb-6 w-fit">
                         <i class="fas fa-rocket text-cyan-400 text-xs md:text-sm"></i>
                         <span class="text-xs md:text-sm font-medium text-cyan-400">Направление развития</span>
                     </div>
-                    
-                    <h2 class="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight">Непрерывный мониторинг</h2>
-                    <p class="text-gray-400 text-base md:text-lg mb-6 md:mb-8 leading-relaxed">
+
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 leading-tight">Непрерывный мониторинг</h2>
+                    <p class="text-gray-400 text-base md:text-lg mb-6 md:mb-8 max-w-2xl leading-relaxed">
                         Текущий прототип решает задачу разового анализа по фото. Следующий шаг — непрерывный контроль гранул в потоке, например на конвейерной ленте: автоматический анализ без ручной выкладки и остановки процесса.
                     </p>
-                    
-                    <div class="space-y-3 md:space-y-4 mb-8 md:mb-10">
-                        <div class="flex items-start gap-3 md:gap-4">
-                            <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <i class="fas fa-check text-cyan-400 text-xs"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white text-sm md:text-base">Анализ в реальном времени</h4>
-                                <p class="text-gray-500 text-xs md:text-sm">Обработка видеопотока с камер наблюдения</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 md:gap-4">
-                            <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <i class="fas fa-check text-cyan-400 text-xs"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white text-sm md:text-base">Интеграция с конвейерами</h4>
-                                <p class="text-gray-500 text-xs md:text-sm">Подключение к линиям производства без остановки</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 md:gap-4">
-                            <div class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <i class="fas fa-check text-cyan-400 text-xs"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white text-sm md:text-base">Мгновенные оповещения</h4>
-                                <p class="text-gray-500 text-xs md:text-sm">Автоматическое уведомление при обнаружении брака</p>
-                            </div>
-                        </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
+                        <a href="demo-2/" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 min-h-[48px]">
+                            <span>Попробовать демо непрерывного мониторинга</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
-                    
-                    <a href="demo-2/" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 md:px-8 py-3.5 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all hover:shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-1 flex items-center justify-center gap-2 min-h-[48px]">
-                        <span>Попробовать демо непрерывного мониторинга</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <div class="relative order-1 lg:order-2 px-4 md:px-0">
-                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-3xl blur-3xl opacity-20 animate-pulse-slow"></div>
-                    <div class="relative glass-card rounded-2xl md:rounded-3xl p-4 md:p-8 border border-cyan-500/20">
-                        <div class="relative min-h-[260px] md:min-h-[420px] rounded-xl md:rounded-2xl overflow-hidden bg-slate-900/70 shadow-2xl flex items-center justify-center">
-                            <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/15 via-blue-600/10 to-transparent"></div>
-                            <div class="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.08)_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
-                            <div class="relative w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                                <i class="fas fa-video text-white text-4xl md:text-6xl"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Floating Stats Cards - hidden on small mobile, shown on larger screens -->
-                        <div class="hidden sm:block absolute -top-4 -right-4 md:-top-6 md:-right-6 glass-card p-3 md:p-4 rounded-lg md:rounded-xl border border-cyan-500/30 shadow-xl animate-float">
-                            <div class="flex items-center gap-2 md:gap-3">
-                                <div class="w-8 h-8 md:w-10 md:h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-check text-green-400 text-sm md:text-base"></i>
-                                </div>
-                                <div>
-                                    <div class="text-lg md:text-2xl font-bold text-white">90%+</div>
-                                    <div class="text-[10px] md:text-xs text-gray-400">Точность</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="hidden sm:block absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 glass-card p-3 md:p-4 rounded-lg md:rounded-xl border border-cyan-500/30 shadow-xl animate-float" style="animation-delay: 1s;">
-                            <div class="flex items-center gap-2 md:gap-3">
-                                <div class="w-8 h-8 md:w-10 md:h-10 bg-cyan-500/20 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-tachometer-alt text-cyan-400 text-sm md:text-base"></i>
-                                </div>
-                                <div>
-                                    <div class="text-lg md:text-2xl font-bold text-white">100+</div>
-                                    <div class="text-[10px] md:text-xs text-gray-400">Гранул/мин</div>
-                                </div>
-                            </div>
-                        </div>
+
+                    <div class="mt-6 md:mt-8 flex flex-col sm:flex-row items-start gap-3 sm:gap-6 text-sm text-gray-500">
+                        <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Анализ в реальном времени</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-check text-cyan-400"></i> Без остановки линии</span>
                     </div>
                 </div>
             </div>
@@ -362,29 +308,32 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-[1fr_1.45fr_1fr] gap-6 md:gap-8 max-w-5xl md:max-w-6xl mx-auto">
-                <a href="tel:+79162847852" class="glass-card rounded-xl md:rounded-2xl p-6 md:p-8 text-center group block min-w-0">
+                <div class="glass-card rounded-xl md:rounded-2xl p-6 md:p-8 text-center group block min-w-0">
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform">
                         <i class="fas fa-phone text-white text-xl md:text-2xl"></i>
                     </div>
                     <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3 text-white">Телефон</h3>
-                    <p class="text-cyan-400 text-base md:text-lg font-medium group-hover:text-cyan-300 transition-colors">8 916 284-78-52</p>
-                </a>
+                    <div class="space-y-2">
+                        <a href="tel:+79162847852" class="block text-cyan-400 text-base md:text-lg font-medium hover:text-cyan-300 transition-colors">8 916 284-78-52</a>
+                        <a href="tel:+79053312122" class="block text-cyan-400 text-base md:text-lg font-medium hover:text-cyan-300 transition-colors">8 905 331-21-22</a>
+                    </div>
+                </div>
 
-                <a href="mailto:doroshenko.igor@physics.msu.ru" class="glass-card rounded-xl md:rounded-2xl p-6 md:px-10 md:py-8 text-center group block min-w-0">
+                <a href="mailto:agentuu.msu@yandex.com" class="glass-card rounded-xl md:rounded-2xl p-6 md:px-10 md:py-8 text-center group block min-w-0">
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform">
                         <i class="fas fa-envelope text-white text-xl md:text-2xl"></i>
                     </div>
                     <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3 text-white">Электронная почта</h3>
-                    <p class="text-cyan-400 text-sm md:text-base font-medium break-all md:break-normal md:whitespace-nowrap group-hover:text-cyan-300 transition-colors">doroshenko.igor@physics.msu.ru</p>
+                    <p class="text-cyan-400 text-sm md:text-base font-medium break-all md:break-normal md:whitespace-nowrap group-hover:text-cyan-300 transition-colors">agentuu.msu@yandex.com</p>
                 </a>
 
-                <div class="glass-card rounded-xl md:rounded-2xl p-6 md:p-8 text-center group min-w-0">
+                <a href="https://yandex.ru/maps/?text=%D0%9D%D0%B0%D1%83%D1%87%D0%BD%D1%8B%D0%B9%20%D0%BF%D0%B0%D1%80%D0%BA%20%D0%9C%D0%93%D0%A3%2C%20%D0%9B%D0%B5%D0%BD%D0%B8%D0%BD%D1%81%D0%BA%D0%B8%D0%B5%20%D0%B3%D0%BE%D1%80%D1%8B%2C%20%D0%B4.%201%2C%20%D1%81%D1%82%D1%80.%2029-%D0%B0" target="_blank" rel="noopener noreferrer" class="glass-card rounded-xl md:rounded-2xl p-6 md:p-8 text-center group block min-w-0">
                     <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg group-hover:scale-110 transition-transform">
                         <i class="fas fa-map-marker-alt text-white text-xl md:text-2xl"></i>
                     </div>
                     <h3 class="text-lg md:text-xl font-bold mb-2 md:mb-3 text-white">Адрес</h3>
-                    <p class="text-gray-400 text-sm md:text-base leading-relaxed">Научный парк МГУ, Ленинские горы, д. 1, стр. 29-а</p>
-                </div>
+                    <p class="text-gray-400 text-sm md:text-base leading-relaxed group-hover:text-cyan-300 transition-colors">Научный парк МГУ, Ленинские горы, д. 1, стр. 29-а</p>
+                </a>
             </div>
         </div>
     </section>
@@ -398,10 +347,10 @@
                     <div class="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-microscope text-white text-sm"></i>
                     </div>
-                    <span class="font-bold text-lg">Granule<span class="text-cyan-400">AI</span></span>
+                    <span class="font-bold text-lg">Granule<span class="text-cyan-400">CV</span></span>
                 </div>
                 
-                <p class="text-gray-500 text-xs md:text-sm text-center md:text-left mt-2 md:mt-0">© 2026 GranuleAI. Все права защищены.</p>
+                <p class="text-gray-500 text-xs md:text-sm text-center md:text-left mt-2 md:mt-0">© 2026 ИИ-Агент. Все права защищены.</p>
                 
                 <div class="flex items-center gap-3 md:gap-4 mt-2 md:mt-0" aria-hidden="true">
                     <div class="w-9 h-9 md:w-10 md:h-10 shrink-0"></div>
@@ -412,19 +361,28 @@
         </div>
     </footer>
 
+    <div class="fixed inset-0 z-[100] hidden bg-slate-950/95 backdrop-blur-sm px-4 py-6 sm:px-6 md:p-10" id="image-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Просмотр изображения интерфейса">
+        <button type="button" class="absolute right-4 top-4 sm:right-6 sm:top-6 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center justify-center transition-colors" id="image-modal-close" aria-label="Закрыть просмотр изображения">
+            <i class="fas fa-times text-lg"></i>
+        </button>
+        <div class="w-full h-full flex items-center justify-center">
+            <img src="" alt="" id="image-modal-img" class="max-w-full max-h-full object-contain rounded-xl md:rounded-2xl shadow-2xl shadow-black/50">
+        </div>
+    </div>
+
     <script>
         // Data Layer
         const navigationData = [
             { "label": "О продукте", "href": "#workflow" },
-            { "label": "Возможности", "href": "#features" },
             { "label": "Демо", "href": "#demo" },
+            { "label": "Возможности", "href": "#features" },
             { "label": "Контакты", "href": "#contacts" }
         ];
 
         const heroStatsData = [
             { "value": "90%+", "label": "Точность распознавания" },
             { "value": "< 10с", "label": "Время анализа" },
-            { "value": "200+", "label": "Анализов в сутки" },
+            { "value": "0.1 мм+", "label": "Размер гранул" },
             { "value": "40+", "label": "Типов гранул" }
         ];
 
@@ -468,11 +426,6 @@
                 "icon": "fas fa-file-excel",
                 "color": "from-emerald-400 to-emerald-600"
             }
-        ];
-
-        const demoCarouselImages = [
-            { "src": "images/screen1.jpg", "alt": "Экран интерфейса системы анализа гранул" },
-            { "src": "images/screen2.jpg", "alt": "Экран результатов анализа гранул" }
         ];
 
         // Render Functions
@@ -526,71 +479,6 @@
             ).join("");
         }
 
-        // Builds an automatic sliding carousel for demo screenshots.
-        function initDemoCarousel(images) {
-            const carousel = document.getElementById("demo-carousel");
-            if (!carousel || images.length === 0) return;
-
-            const slides = images.length > 1 ? images.concat(images[0]) : images;
-            carousel.innerHTML =
-                "<div class=\"demo-carousel-track flex h-full\" id=\"demo-carousel-track\">" +
-                    slides.map(image =>
-                        "<img src=\"" + image.src + "\" alt=\"" + image.alt + "\" class=\"w-full h-full object-cover flex-shrink-0 opacity-95\" loading=\"lazy\">"
-                    ).join("") +
-                "</div>" +
-                "<div class=\"absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2\" id=\"demo-carousel-bullets\">" +
-                    images.map((image, index) =>
-                        "<button type=\"button\" class=\"demo-carousel-bullet" + (index === 0 ? " is-active" : "") + "\" data-slide=\"" + index + "\" aria-label=\"Показать изображение " + (index + 1) + "\"></button>"
-                    ).join("") +
-                "</div>";
-
-            if (images.length < 2) return;
-
-            const track = document.getElementById("demo-carousel-track");
-            const bullets = carousel.querySelectorAll(".demo-carousel-bullet");
-            let activeIndex = 0;
-            let carouselInterval;
-
-            function setActiveBullet(index) {
-                bullets.forEach(function(bullet, bulletIndex) {
-                    bullet.classList.toggle("is-active", bulletIndex === index);
-                });
-            }
-
-            function moveToSlide(index, animate) {
-                track.style.transition = animate ? "transform 0.8s ease" : "none";
-                track.style.transform = "translateX(-" + (index * 100) + "%)";
-                setActiveBullet(index % images.length);
-            }
-
-            function showNextSlide() {
-                activeIndex += 1;
-                moveToSlide(activeIndex, true);
-            }
-
-            function restartCarousel() {
-                clearInterval(carouselInterval);
-                carouselInterval = setInterval(showNextSlide, 5000);
-            }
-
-            track.addEventListener("transitionend", function() {
-                if (activeIndex === images.length) {
-                    activeIndex = 0;
-                    moveToSlide(activeIndex, false);
-                }
-            });
-
-            bullets.forEach(function(bullet) {
-                bullet.addEventListener("click", function() {
-                    activeIndex = Number(bullet.dataset.slide);
-                    moveToSlide(activeIndex, true);
-                    restartCarousel();
-                });
-            });
-
-            restartCarousel();
-        }
-
         function renderFooterLinks(columns) {
             return columns.map(col => 
                 "<div class=\"col-span-1\">" +
@@ -604,13 +492,65 @@
             ).join("");
         }
 
+        // Opens section screenshots in a shared fullscreen viewer.
+        function initImageModal() {
+            const modal = document.getElementById("image-modal");
+            const modalImage = document.getElementById("image-modal-img");
+            const closeButton = document.getElementById("image-modal-close");
+            const openButtons = document.querySelectorAll("[data-image-modal-src]");
+
+            if (!modal || !modalImage || !closeButton || !openButtons.length) return;
+
+            let lastOpenButton = null;
+
+            function openModal(button) {
+                lastOpenButton = button;
+                modalImage.src = button.dataset.imageModalSrc;
+                modalImage.alt = button.dataset.imageModalAlt || "";
+                modal.classList.remove("hidden");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.classList.add("image-modal-open");
+                closeButton.focus();
+            }
+
+            function closeModal() {
+                modal.classList.add("hidden");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("image-modal-open");
+                modalImage.src = "";
+                if (lastOpenButton) {
+                    lastOpenButton.focus();
+                }
+            }
+
+            openButtons.forEach(function(button) {
+                button.addEventListener("click", function() {
+                    openModal(button);
+                });
+            });
+            closeButton.addEventListener("click", closeModal);
+            modal.addEventListener("click", function(event) {
+                const isImageClick = event.target.closest("#image-modal-img");
+                const isCloseClick = event.target.closest("#image-modal-close");
+
+                if (!isImageClick && !isCloseClick) {
+                    closeModal();
+                }
+            });
+            document.addEventListener("keydown", function(event) {
+                if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+                    closeModal();
+                }
+            });
+        }
+
         // Initialize Render
         document.getElementById("nav-links").innerHTML = renderNavigation(navigationData);
         document.getElementById("mobile-nav-links").innerHTML = renderMobileNavigation(navigationData);
         document.getElementById("hero-stats").innerHTML = renderHeroStats(heroStatsData);
         document.getElementById("workflow-grid").insertAdjacentHTML("afterbegin", renderWorkflowSteps(workflowStepsData));
         document.getElementById("features-grid").innerHTML = renderFeatureCards(featuresData);
-        initDemoCarousel(demoCarouselImages);
+        initImageModal();
 
         // Event Delegation for Navigation
         document.addEventListener("click", function(event) {
